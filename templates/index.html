@@ -18,7 +18,6 @@
       var trace;
       var layout;
       var temp;
-           
 
       namespace = '/test';
       var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
@@ -73,25 +72,16 @@
           socket.emit('stop_request');
           return false; 
         });
-      $('form#connect').submit(function(event) {    // kinda done
-          socket.emit('connect_request');
-          document.getElementById("disccon").disabled = false;
-          document.getElementById("sta").disabled = false;
-          document.getElementById("sto").disabled = false;
-          document.getElementById("con").disabled = true;
-          return false; 
-        });    
       $('form#disconnect').submit(function(event) {
           socket.emit('disconnect_request');
           return false; 
-        });   
-               
+        });         
 
       var gauge = new RadialGauge({
           renderTo: 'canvasID',
           width: 300,
           height: 300,
-          units: "Voltage",
+          units: "Volatege val",
           minValue: 0,
           maxValue: 5,
           majorTicks: [
@@ -106,9 +96,9 @@
           strokeTicks: true,
           highlights: [
               {
-                  "from": 0,
+                  "from": 0.5,
                   "to": 1,
-                  "color": "rgba(255, 255, 255, .75)"
+                  "color": "rgba(200, 50, 50, .75)"
               }
           ],
           colorPlate: "#fff",
@@ -131,10 +121,6 @@
     
  </head>
  <body>
-   
-  <div id="redirection">  
-    <p><a href="/dbtab">Load data from db or file</a></p>
-  </div>
 
   <div id="tabs">    
     <div id="tabs-1">
@@ -144,22 +130,18 @@
         <input type="text" name="P" id="P" placeholder="P" required><br>
         <input type="text" name="I" id="I" placeholder="I" required><br>
         <input type="text" name="D" id="D" placeholder="D" required><br>
-        <input type="text" name="Setpoint" id="Setpoint" placeholder="Setpoint" required><br>
+        <input type="text" name="Setpoint" id="Setpoint" placeholder="Setpoint"><br>
         <input type="submit" value="Send">
       </form>
-      <form id="connect" method="POST" action="#" onclick="myFunction()"> 
-        <br><input id="con" type="submit" value="OPEN">
-      </form> 
-      <form id="disconnect" method="POST" action="#" >
-        <input id="disccon" type="submit" value="CLOSE" disabled>
-      </form> 
-      
       <form id="start" method="POST" action='#'>
-        <br><input id="sta" type="submit" value="Start" disabled>
+        <br><input type="submit" value="Start">
       </form>
       <form id="stop" method="POST" action='#'>
-        <input id="sto" type="submit" value="Stop" disabled>
-      </form>            
+        <input type="submit" value="Stop">
+      </form>
+      <form id="disconnect" method="POST" action="#">
+        <br><input type="submit" value="CLOSE">
+      </form>       
     </div>
     <div id="tabs-2">
       <div id="plotdiv" style="width:600px;height:250px;"></div>

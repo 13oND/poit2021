@@ -44,10 +44,6 @@ def background_thread(args):
 def index():
     return render_template('index.html', async_mode=socketio.async_mode)
 
-@app.route('/dbtab', methods=['GET', 'POST'])
-def dbtab():
-    return render_template('dbtab.html', async_mode=socketio.async_mode)
-
 @socketio.on('my_event', namespace='/test')
 def test_message(message):   
     session['receive_count'] = session.get('receive_count', 0) + 1 
@@ -66,7 +62,7 @@ def disconnect_request():
          {'data': 'Disconnected!', 'count': session['receive_count']})
     disconnect()
 
-@socketio.on('connect_request', namespace='/test')
+@socketio.on('connect', namespace='/test')
 def test_connect():
     global thread
     with thread_lock:
