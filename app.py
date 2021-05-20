@@ -123,7 +123,22 @@ def background_thread(args):
                 dataCounter2 = 0    
                 
     db.close()                 
-            
+
+@app.route('/read/<string:num>')    # works
+def readmyfile(num):
+    fo = open("voltageData.txt","r")
+    rows = fo.readlines()
+    return rows[int(num)-1]
+
+@app.route('/dbdata/<string:num>', methods=['GET', 'POST'])   # works
+def dbdata(num):
+  db = MySQLdb.connect(host=myhost,user=myuser,passwd=mypasswd,db=mydb)
+  cursor = db.cursor()
+  print(num)
+  print("/////////////////////////POG/////////////////////////")
+  cursor.execute("SELECT data FROM zfinal WHERE id=%s", num)
+  rv = cursor.fetchone()
+  return str(rv[0])
             
 @socketio.on('db_event', namespace='/test')
 def db_message(message):   

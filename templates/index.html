@@ -49,14 +49,10 @@
         var traces = new Array();
         traces.push(trace);
         Plotly.newPlot($('#plotdiv')[0], traces, layout); 
-
-        if(msg.data == 'Amplitude value set') { 
-          gauge.value = temp;
-        }    
-        else {
-          gauge.value = msg.data;
-          temp = msg.data;
-        }    
+        
+        gauge.value = msg.data;
+          
+        
       });
 
       $('form#emit').submit(function(event) {

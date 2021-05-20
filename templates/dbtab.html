@@ -1,105 +1,164 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
- <head>
-  <title>Zaverecne zadanie POIT 2021</title>   
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-   <link rel="stylesheet" href="static/jquery-ui.min.css">
-   <script src="static/jquery-3.2.1.min.js"></script>
-   <script src="static/jquery-ui.min.js"></script>
-   <script src="static/libs/gauge.min.js"></script>
-   <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
-   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.min.js"></script>
-   <script src="static/libs/plotly-latest.min.js"></script>
-   
-   <script type="text/javascript" charset="utf-8">
-     $(document).ready(function() {
-      var x = new Array();
-      var y = new Array();
-      var trace;
-      var layout;
-      var temp;
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zaverecne zadanie POIT 2021</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style type="text/css">           
+    </style>
+    <script src="static/libs/jquery-1.11.1.min.js"></script>
+    <script src="static/libs/plotly-latest.min.js"></script>
 
-      namespace = '/test';
-      var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-
-      socket.on('connect', function() {
-        socket.emit('my_event', {data: 'I\'m connected!', value: 1}); });
-
-      socket.on('my_response', function(msg) {
-        console.log(msg.data);
-        $('#log').append('Received #'+msg.count+': '+msg.data+'<br>').html(); 
-        x.push(parseFloat(msg.count));
-        y.push(parseFloat(msg.data));
-        trace = {
-            x: x,
-            y: y,
-        };       
-        layout = {
-          title: 'Data',
+  <script>
+   $(document).ready(function(){      // db
+    var layout = {
+          title: 'Change of voltage over time',
           xaxis: {
-              title: 'x',
+            title: 'time',
+            range: [0,60]
           },
           yaxis: {
-              title: 'y',
-              range: [0,5.1]
+            title: 'voltage',
+            range: [0,5]
           }
         };
-        console.log(trace);
-        var traces = new Array();
-        traces.push(trace);
-        Plotly.newPlot($('#plotdiv')[0], traces, layout); 
 
-        if(msg.data == 'Amplitude value set') { 
-          gauge.value = temp;
-        }    
-        else {
-          gauge.value = msg.data;
-          temp = msg.data;
-        }    
-      });
+      $('form#record').submit(function(event) {
+        var $link = "dbdata/" + $('#value').val();
+        
+        $.ajax({
+          type: "POST",
+          url: $link,
+          success:function(data) 
+          { console.log(data);  
+            data = JSON.parse(data);
+            console.log(data);    
+            n = Object.keys(data).length;
+            console.log(n);
+            
+            xl = [];
+            yl = [];  
+       
+            var output = "";
+                
+            for (var i=0; i< n; i++){
+              xl.push(data[i].count);
+              yl.push(data[i].voltage); 
+              output += data[i].P + " "  + data[i].I + " "  + data[i].D + " "  + data[i].Setpoint 
+                        + " "  + data[i].voltage + " "  + data[i].count;                               
+              }
+              
+             var trace = {
+              x: xl,
+              y: yl,
+              };  
+               
+            var traces = new Array();
+            traces.push(trace);           
+                 
+            Plotly.newPlot($('#plotdiv2')[0], traces,layout); 
+            $('#canvasLog1').append(output).html();          
+          }
+        }).done(function( o ) {
+          // do something
+        });
 
-      $('form#emit').submit(function(event) {
-          socket.emit('my_event', {value: $('#P').val() + "a" + $('#I').val() + "a" + $('#D').val()+ "a" + $('#Setpoint').val() + "a"});                   
-          //socket.emit('my_event', {value: $('#D').val()});
-          //socket.emit('my_event', {value: $('#Setpoint').val()});
-          return false; 
-        });
-      $('form#start').submit(function(event) {
-          socket.emit('start_request');
-          return false; 
-        });
-      $('form#stop').submit(function(event) {
-          socket.emit('stop_request');
-          return false; 
-        });
-      $('form#disconnect').submit(function(event) {
-          socket.emit('disconnect_request');
-          return false; 
-        });        
+        return false;
+      });    
+   });
+  </script>
+  
+  <script>
+   $(document).ready(function(){    // file
+    var layout = {
+          title: 'Change of voltage over time',
+          xaxis: {
+            title: 'time',
+            range: [0,60]
+          },
+          yaxis: {
+            title: 'voltage',
+            range: [0,5]
+          }
+        };
 
-     
-    </script> 
-          
-    
- </head>
- <body>
-  <div id="tabs">    
-    <div id="tabs-1">
-      <h1>Load data from db or file</h1>
-      <h2>Choose which data to load from db:</h2>
-      <form id="XXXXXXXXXXXXXX" method="POST" action='#'>       
-        <input type="text" name="dataLoad" id="dataLoad" placeholder="choose data" required><br>        
-        <input type="submit" value="Get Data">
-      </form>             
-    </div>
-    <div id="tabs-2">
-      <div id="plotdiv" style="width:600px;height:250px;"></div>
-    </div>
-    <div id="tabs-3">
-      <canvas id="canvasID"></canvas>
-      <h2>Logged data:</h2>
-      <div id="loggedData"></div>
-    </div>
+      $('form#record2').submit(function(event) {
+        var $link = "read/" + $('#value2').val();
+        
+        $.ajax({
+          type: "GET",
+          url: $link,
+          success:function(data) 
+          { console.log(data);  
+            data = JSON.parse(data);
+            console.log(data);    
+            n = Object.keys(data).length;
+            console.log(n);
+            
+            xl = [];
+            yl = [];  
+       
+            var output2 = "";
+                
+            for (var i=0; i< n; i++){
+              xl.push(data[i].count);
+              yl.push(data[i].voltage); 
+              output2 += data[i].P + " "  + data[i].I + " "  + data[i].D + " "  + data[i].Setpoint 
+                        + " "  + data[i].voltage + " "  + data[i].count;                              
+              }
+              
+             var trace = {
+              x: xl,
+              y: yl,
+              };  
+               
+            var traces = new Array();
+            traces.push(trace);           
+                 
+            Plotly.newPlot($('#plotdiv3')[0], traces,layout);   
+            $('#canvasLog2').append(output2).html();      
+          }
+        }).done(function( o ) {
+          // do something
+        });
+
+        return false;
+      });    
+   });
+  </script>
+  
+</head>
+<body>
+  <div id="redirection2">  
+    <p><a href="/">Go back to the main page</a></p>
   </div>
- </body>
-</html>
+  
+  <h2>Nacitanie z db</h2>
+  <form id = "record" method="POST" action='#'>
+    <input type="text" name="value" id="value" placehodler="Record No.">
+    <input type="submit" value="set">  
+  </form> 
+    <div id="plotdiv2" style="width:600px;height:250px;"></div>
+    
+    <div id="canvas1">
+      <canvas id="canvas1ID"></canvas>
+      <h2>Receive from db:</h2>
+      <div id="canvasLog1"></div>
+    </div>    
+    
+    <h2>Nacitanie zo suboru</h2>
+    <form id = "record2" method="POST" action='#'>
+      <input type="text" name="value2" id="value2" placehodler="Record No.">
+      <input type="submit" value="set">  
+    </form> 
+    <div id="plotdiv3" style="width:600px;height:250px;"></div>
+    
+    <div id="canvas2">
+      <canvas id="canvas2ID"></canvas>
+      <h2>Receive from file:</h2>
+      <div id="canvasLog2"></div>
+    </div>
+      
+</body>
+</html> 
