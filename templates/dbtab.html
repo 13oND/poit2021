@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Zaverecne zadanie POIT 2021</title>
+    <title>RCRC circuit 2021</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style type="text/css">           
     </style>
@@ -27,6 +27,8 @@
       $('form#record').submit(function(event) {
         var $link = "dbdata/" + $('#value').val();
         
+        document.getElementById("canvasLog1").innerHTML = "";
+        
         $.ajax({
           type: "POST",
           url: $link,
@@ -45,8 +47,8 @@
             for (var i=0; i< n; i++){
               xl.push(data[i].count);
               yl.push(data[i].voltage); 
-              output += data[i].P + " "  + data[i].I + " "  + data[i].D + " "  + data[i].Setpoint 
-                        + " "  + data[i].voltage + " "  + data[i].count;                               
+              output += "P: " + data[i].P + " I: "  + data[i].I + " D: "  + data[i].D + " Setpoint: "  + data[i].Setpoint/1023*5 
+                        + " Voltage: "  + data[i].voltage + " Count: "  + data[i].count + " | ";                               
               }
               
              var trace = {
@@ -86,6 +88,8 @@
       $('form#record2').submit(function(event) {
         var $link = "read/" + $('#value2').val();
         
+        document.getElementById("canvasLog2").innerHTML = "";
+        
         $.ajax({
           type: "GET",
           url: $link,
@@ -104,8 +108,8 @@
             for (var i=0; i< n; i++){
               xl.push(data[i].count);
               yl.push(data[i].voltage); 
-              output2 += data[i].P + " "  + data[i].I + " "  + data[i].D + " "  + data[i].Setpoint 
-                        + " "  + data[i].voltage + " "  + data[i].count;                              
+              output2 += "P: " + data[i].P + " I: "  + data[i].I + " D: "  + data[i].D + " Setpoint: "  + data[i].Setpoint/1023*5 
+                        + " Voltage: "  + data[i].voltage + " Count: "  + data[i].count + " | "; ;                              
               }
               
              var trace = {
@@ -134,7 +138,7 @@
     <p><a href="/">Go back to the main page</a></p>
   </div>
   
-  <h2>Nacitanie z db</h2>
+  <h2>Load data from db</h2>
   <form id = "record" method="POST" action='#'>
     <input type="text" name="value" id="value" placehodler="Record No.">
     <input type="submit" value="set">  
@@ -143,11 +147,11 @@
     
     <div id="canvas1">
       <canvas id="canvas1ID"></canvas>
-      <h2>Receive from db:</h2>
+      <h2>Received data from db:</h2>
       <div id="canvasLog1"></div>
     </div>    
     
-    <h2>Nacitanie zo suboru</h2>
+    <h2>Load data from file</h2>
     <form id = "record2" method="POST" action='#'>
       <input type="text" name="value2" id="value2" placehodler="Record No.">
       <input type="submit" value="set">  
@@ -156,7 +160,7 @@
     
     <div id="canvas2">
       <canvas id="canvas2ID"></canvas>
-      <h2>Receive from file:</h2>
+      <h2>Received data from file:</h2>
       <div id="canvasLog2"></div>
     </div>
       

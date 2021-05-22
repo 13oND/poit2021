@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
  <head>
-  <title>Zaverecne zadanie POIT 2021</title>   
+  <title>RCRC circuit 2021</title>   
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
    <link rel="stylesheet" href="static/jquery-ui.min.css">
    <script src="static/jquery-3.2.1.min.js"></script>
@@ -56,7 +56,7 @@
       });
 
       $('form#emit').submit(function(event) {
-          socket.emit('my_event', {value: $('#P').val() + "a" + $('#I').val() + "a" + $('#D').val()+ "a" + $('#Setpoint').val() + "a"});                   
+          socket.emit('my_event', {value: $('#P').val() + "a" + $('#I').val() + "a" + $('#D').val()+ "a" + ($('#Setpoint').val()/5*1023) + "a"});                   
           return false; 
         });
       $('form#start').submit(function(event) {
@@ -124,7 +124,7 @@
               "5"              
           ],
           minorTicks: 2,
-          strokeTicks: true,
+          strokeTicks: true,    // valueText
           highlights: [
               {
                   "from": 0,
@@ -135,6 +135,7 @@
           colorPlate: "#fff",
           borderShadowWidth: 0,
           borders: false,
+          valueBox: false,
           needleType: "arrow",
           needleWidth: 2,
           needleCircleSize: 7,
@@ -159,13 +160,13 @@
 
   <div id="tabs">    
     <div id="tabs-1">
-      <h1>Zaverecne zadanie POIT 2021</h1>
-      <h2>Send:</h2>
+      <h1>RCRC circuit 2021</h1>
+      <h2>Send data:</h2>
       <form id="emit" method="POST" action='#'>
         <input type="text" name="P" id="P" placeholder="P" required><br>
         <input type="text" name="I" id="I" placeholder="I" required><br>
         <input type="text" name="D" id="D" placeholder="D" required><br>
-        <input type="text" name="Setpoint" id="Setpoint" placeholder="Setpoint" required><br>
+        <input type="text" name="Setpoint" id="Setpoint" placeholder="Setpoint(0-5V)" required><br>
         <input type="submit" value="Send">
       </form>
       <form id="connect" method="POST" action="#" onclick="myFunction()"> 
@@ -174,7 +175,7 @@
       <form id="disconnect" method="POST" action="#" >
         <input id="disccon" type="submit" value="CLOSE" disabled>
       </form> 
-      <h2>Spustenie dat</h2>
+      <h2>Start data flow</h2>
       <form id="start" method="POST" action='#'>
         <input id="sta" type="submit" value="Start" disabled>
       </form>
@@ -182,9 +183,9 @@
         <input id="sto" type="submit" value="Stop" disabled>
       </form>            
     </div>
-    <h2>Zapis do db</h2>
+    <h2>Write to db</h2>
     <button id="ssDB" type="submit" value="start" disabled>Start</button>
-    <br><h2>Zapis do suboru</h2>
+    <br><h2>Write to file</h2>
     <button id="ssFile" type="submit" value="start" disabled>Start</button>
     <div id="tabs-2">
       <div id="plotdiv" style="width:600px;height:250px;"></div>
